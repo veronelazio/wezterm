@@ -10,3 +10,6 @@
 [submodule "freetype2"]
 	path = deps/freetype/freetype2
 	url = https://github.com/wez/freetype2.git
+[submodule "wezterm.wiki"]
+	path = wezterm.wiki
+	url = https://github.com/veronelazio/wezterm.wiki.git
