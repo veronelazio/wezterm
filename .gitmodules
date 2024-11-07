@@ -13,3 +13,6 @@
 [submodule "wezterm.wiki"]
 	path = wezterm.wiki
 	url = https://github.com/veronelazio/wezterm.wiki.git
+[submodule "wezterm-config"]
+	path = wezterm-config
+	url = file:///C:/Users/veron/wezterm-config
