@@ -1,203 +1,156 @@
 ## Option 1: Real-Time Data Ingestion with Snowpipe
-``` mermaid
+```mermaid
 flowchart TD
-    %% Define main components with descriptions
-    A[S3 Bucket:<br>New JSON Files] -->|New Files Arrive| B[Snowpipe:<br>Data Ingestion]
-    B -->|Load Data| C[Snowflake Staging Table:<br>Temporary Data Storage]
-    C --> D[Snowflake Stream:<br>Change Tracking]
-    D --> E[Snowflake Task:<br>Batch Processing]
-    E -->|Invoke| F[External Function:<br>API Gateway]
-    F --> G[AWS Lambda Function:<br>Process & Flatten JSON]
+    A["S3 Bucket:<br/>New JSON Files"] -->|"New Files Arrive"| B["Snowpipe:<br/>Data Ingestion"]
+    B -->|"Load Data"| C["Snowflake Staging Table:<br/>Temporary Data Storage"]
+    C --> D["Snowflake Stream:<br/>Change Tracking"]
+    D --> E["Snowflake Task:<br/>Batch Processing"]
+    E -->|"Invoke"| F["External Function:<br/>API Gateway"]
+    F --> G["AWS Lambda Function:<br/>Process & Flatten JSON"]
     
-    %% AWS Lambda processing steps
-    G -->|Fetch Files from S3| H[S3 Bucket:<br>Source Files]
-    G -->|Flatten JSON| I[Flattened Data:<br>Processed Data]
-    I --> J{Store Flattened Data:<br>Decision Point}
-    J -->|To Snowflake| K[Snowflake Target Table:<br>Final Data Storage]
-    J -->|To S3| L[S3 Bucket:<br>Flattened Data]
-    L -->|Trigger Snowpipe| B
+    G -->|"Fetch Files from S3"| H["S3 Bucket:<br/>Source Files"]
+    G -->|"Flatten JSON"| I["Flattened Data:<br/>Processed Data"]
+    I --> J{"Store Flattened Data:<br/>Decision Point"}
+    J -->|"To Snowflake"| K["Snowflake Target Table:<br/>Final Data Storage"]
+    J -->|"To S3"| L["S3 Bucket:<br/>Flattened Data"]
+    L -->|"Trigger Snowpipe"| B
     
-    %% Event Functions and Chaining
-    G -->|Trigger Additional Functions| M[AWS Lambda Function:<br>Further Processing]
+    G -->|"Trigger Additional Functions"| M["AWS Lambda Function:<br/>Further Processing"]
     
-    %% Define error handling paths
-    K -->|Write Success| N[End: Job Completion]
-    L -->|Re-Ingestion Success| N
-    M -->|Further Processing Complete| N
+    K -->|"Write Success"| N["End: Job Completion"]
+    L -->|"Re-Ingestion Success"| N
+    M -->|"Further Processing Complete"| N
     
-    %% Define error handling paths
-    G -->|Processing Error| O[Error Handler:<br>Log & Alert]
-    M -->|Processing Error| O
-    
-    %% Styling (Black Text, No Background Colors)
-    %% No class definitions to ensure black text
-
+    G -->|"Processing Error"| O["Error Handler:<br/>Log & Alert"]
+    M -->|"Processing Error"| O
 ```
-## Option 2: Enhanced AWS Glue Jobs for Robust Batch Processing
-``` mermaid
+
+## Option 2: Enhanced AWS Glue Jobs
+```mermaid
 flowchart TD
-    %% Define main components with unique identifiers and descriptions
-    A[Start: AWS Glue Job] --> B[ConfigurationManager<br>Loads and validates configurations]
-    B --> C[GlueJobProcessor<br>Encapsulates processing logic]
-    C --> D[HealthCheckSystem<br>Performs system and connection health checks]
-    D --> E[SchemaValidator<br>Validates JSON schema and nesting depth]
-    E --> F[PerformanceMonitor<br>Tracks and reports job performance metrics]
-    F --> G[ErrorHandler<br>Manages error logging and handling]
-    G --> H[CircuitBreaker<br>Prevents cascading failures]
-    H --> I[RecoverySystem<br>Automates recovery from failures]
-    I --> J[Process Data<br>Main data processing workflow]
-    J --> K[Read & Validate JSON<br>Ingests and validates JSON data]
-    K --> L[Transform & Flatten Data<br>Processes and flattens nested JSON]
-    L --> M[Write to Snowflake<br>Loads processed data into Snowflake]
-    M --> N[End: Job Completion]
+    A["Start: AWS Glue Job"] --> B["Configuration Manager<br/>Loads and validates configurations"]
+    B --> C["Glue Job Processor<br/>Encapsulates processing logic"]
+    C --> D["Health Check System<br/>Performs system and connection checks"]
+    D --> E["Schema Validator<br/>Validates JSON schema and depth"]
+    E --> F["Performance Monitor<br/>Tracks and reports metrics"]
+    F --> G["Error Handler<br/>Manages error logging"]
+    G --> H["Circuit Breaker<br/>Prevents cascading failures"]
+    H --> I["Recovery System<br/>Automates recovery"]
+    I --> J["Process Data<br/>Main workflow"]
+    J --> K["Read & Validate JSON<br/>Ingests and validates data"]
+    K --> L["Transform & Flatten Data<br/>Processes nested JSON"]
+    L --> M["Write to Snowflake<br/>Loads processed data"]
+    M --> N["End: Job Completion"]
 
-    %% Define error handling paths
-    J -->|Validation Failed| G
-    L -->|Transformation Error| G
-    M -->|Write Error| G
+    J -->|"Validation Failed"| G
+    L -->|"Transformation Error"| G
+    M -->|"Write Error"| G
 
-    %% Define recovery paths
-    I -->|Recovery Successful| J
-    I -->|Recovery Failed| G
-
-    %% Styling (Black Text, No Background Colors)
-    %% No class definitions to ensure black text
-
+    I -->|"Recovery Successful"| J
+    I -->|"Recovery Failed"| G
 ```
-## Diagram 1: Architecture Overview Comparisons
-``` mermaid
+
+## Architecture Overview
+```mermaid
 flowchart TD
-    %% Architecture Overview
-    A1["Architecture Overview"]
-    A1 --> A2["**Alternative Approach:**<br>• Utilizes Snowpipe for real-time data ingestion<br>• Snowflake Tasks for batch processing<br>• AWS Lambda for data transformation and flattening"]
-    A1 --> A3["**Enhanced Glue Jobs:**<br>• Introduces modular classes (GlueJobProcessor, ConfigurationManager)<br>• Adds components like SchemaValidator, PerformanceMonitor"]
-
+    A1["Architecture Overview"] --> A2["Alternative Approach:<br/>• Snowpipe for real-time ingestion<br/>• Snowflake Tasks for processing<br/>• Lambda for transformation"]
+    A1 --> A3["Enhanced Glue Jobs:<br/>• Modular classes (GlueJobProcessor)<br/>• Validation and monitoring components<br/>• Automated error handling"]
 ```
-## Diagram 2: Real-Time Processing
-``` mermaid
+
+## Real-Time Processing
+```mermaid
 flowchart TD
-    %% Real-Time Processing
-    B1["Real-Time Processing"]
-    B1 --> B2["**Alternative Approach:**<br>• **Yes**<br>• Immediate ingestion with Snowpipe<br>• Triggered processing via Lambda functions"]
-    B1 --> B3["**Enhanced Glue Jobs:**<br>• **No**<br>• Scheduled runs (e.g., every four hours)<br>• Batch-based processing introduces latency"]
-
+    B1["Real-Time Processing"] --> B2["Alternative Approach:<br/>• Immediate Snowpipe ingestion<br/>• Lambda-triggered processing<br/>• Real-time data availability"]
+    B1 --> B3["Enhanced Glue Jobs:<br/>• Scheduled batch runs<br/>• Configurable intervals<br/>• Built-in processing delays"]
 ```
-## Diagram 3: Components
-``` mermaid
+
+## Components
+```mermaid
 flowchart TD
-    %% Components
-    C1["Components"]
-    C1 --> C2["**Alternative Approach:**<br>• Snowpipe<br>• Snowflake Tasks<br>• AWS Lambda<br>• API Gateway<br>• S3 Buckets"]
-    C1 --> C3["**Enhanced Glue Jobs:**<br>• ConfigurationManager<br>• GlueJobProcessor<br>• HealthCheckSystem<br>• SchemaValidator<br>• PerformanceMonitor<br>• ErrorHandler<br>• CircuitBreaker<br>• RecoverySystem<br>• Additional Components"]
-
+    C1["Components"] --> C2["Alternative Approach:<br/>• Snowpipe<br/>• Snowflake Tasks<br/>• AWS Lambda<br/>• API Gateway<br/>• S3 Buckets"]
+    C1 --> C3["Enhanced Glue Jobs:<br/>• Config Manager<br/>• Job Processor<br/>• Health Check System<br/>• Schema Validator<br/>• Performance Monitor"]
 ```
-## Diagram 4: Data Flow
-``` mermaid
+
+## Data Flow
+```mermaid
 flowchart TD
-    %% Data Flow
-    D1["Data Flow"]
-    D1 --> D2["**Alternative Approach:**<br>1. **S3 Bucket:** New JSON files arrive<br>2. **Snowpipe:** Ingests data into Snowflake<br>3. **Snowflake Tasks:** Detect changes and trigger AWS Lambda<br>4. **AWS Lambda:** Processes and flattens JSON<br>5. **Data Storage:** Writes back to Snowflake or S3<br>6. **Snowpipe:** Re-ingests flattened data if stored in S3"]
-    D1 --> D3["**Enhanced Glue Jobs:**<br>1. **ConfigurationManager:** Loads configurations<br>2. **GlueJobProcessor:** Initiates processing<br>3. **HealthCheckSystem:** Performs health checks<br>4. **SchemaValidator:** Validates JSON<br>5. **PerformanceMonitor:** Tracks metrics<br>6. **Process Data:** Reads, validates, transforms, and writes data<br>7. **Error Handling:** Routes errors to ErrorHandler<br>8. **RecoverySystem:** Attempts automated recovery<br>9. **CircuitBreaker:** Manages failure states<br>10. **Job Completion:** Finalizes the Glue job"]
-
+    D1["Data Flow"] --> D2["Alternative Approach:<br/>1. S3: Files arrive<br/>2. Snowpipe: Ingest<br/>3. Tasks: Process<br/>4. Lambda: Transform<br/>5. Store: Load data"]
+    D1 --> D3["Enhanced Glue Jobs:<br/>1. Config: Setup<br/>2. Validate: Check data<br/>3. Process: Transform<br/>4. Monitor: Track progress<br/>5. Store: Save results"]
 ```
-## Diagram 5: Scalability
-``` mermaid
+
+## Scalability
+```mermaid
 flowchart TD
-    %% Scalability
-    E1["Scalability"]
-    E1 --> E2["**Alternative Approach:**<br>• High scalability via Snowflake’s architecture and AWS Lambda’s serverless nature<br>• Elastic resource allocation based on demand"]
-    E1 --> E3["**Enhanced Glue Jobs:**<br>• Moderate to high scalability with PerformanceMonitor and RecoverySystem<br>• Configurable resource management through Glue configurations"]
-
+    E1["Scalability"] --> E2["Alternative Approach:<br/>• Auto-scaling with Snowflake<br/>• Serverless Lambda scaling<br/>• Resource optimization"]
+    E1 --> E3["Enhanced Glue Jobs:<br/>• Monitored scaling<br/>• Resource management<br/>• Performance tracking"]
 ```
-## Diagram 6: Error Handling & Recovery
-``` mermaid
+
+## Error Handling & Recovery
+```mermaid
 flowchart TD
-    %% Error Handling & Recovery
-    F1["Error Handling & Recovery"]
-    F1 --> F2["**Alternative Approach:**<br>• Lambda-based error handling with retries and logging<br>• API Gateway facilitates error notifications and retries"]
-    F1 --> F3["**Enhanced Glue Jobs:**<br>• Comprehensive error management with ErrorHandler, CircuitBreaker, and RecoverySystem<br>• Automated recovery and checkpointing"]
-
+    F1["Error Handling"] --> F2["Alternative Approach:<br/>• Lambda retry mechanism<br/>• API Gateway handling<br/>• Error notifications"]
+    F1 --> F3["Enhanced Glue Jobs:<br/>• Error Handler system<br/>• Circuit Breaker protection<br/>• Automated recovery"]
 ```
-## Diagram 7: Implementation Complexity
-``` mermaid
+
+## Implementation Complexity
+```mermaid
 flowchart TD
-    %% Implementation Complexity
-    G1["Implementation Complexity"]
-    G1 --> G2["**Alternative Approach:**<br>• Higher complexity due to multiple service integrations (Snowpipe, Snowflake Tasks, Lambda, API Gateway)<br>• Requires expertise in Snowflake’s ecosystem and AWS Lambda"]
-    G1 --> G3["**Enhanced Glue Jobs:**<br>• Moderate complexity by enhancing existing Glue jobs with additional classes and components<br>• Requires code refactoring within the Glue environment"]
-
+    G1["Implementation"] --> G2["Alternative Approach:<br/>• Multiple service setup<br/>• Integration complexity<br/>• Service expertise needed"]
+    G1 --> G3["Enhanced Glue Jobs:<br/>• Single framework<br/>• Code refactoring<br/>• Centralized management"]
 ```
-## Diagram 8: Maintenance & Manageability
-``` mermaid
+
+## Maintenance & Manageability
+```mermaid
 flowchart TD
-    %% Maintenance & Manageability
-    H1["Maintenance & Manageability"]
-    H1 --> H2["**Alternative Approach:**<br>• Distributed maintenance across multiple services<br>• Requires monitoring tools for Snowflake, Lambda, and API Gateway"]
-    H1 --> H3["**Enhanced Glue Jobs:**<br>• Centralized maintenance within the Glue job framework<br>• Simplified monitoring with integrated components like PerformanceMonitor and HealthCheckSystem"]
-
+    H1["Maintenance"] --> H2["Alternative Approach:<br/>• Multi-service monitoring<br/>• Distributed maintenance<br/>• Service coordination"]
+    H1 --> H3["Enhanced Glue Jobs:<br/>• Centralized monitoring<br/>• Unified maintenance<br/>• Integrated health checks"]
 ```
-## Diagram 9: Operational Overhead
-``` mermaid
+
+## Operational Overhead
+```mermaid
 flowchart TD
-    %% Operational Overhead
-    I1["Operational Overhead"]
-    I1 --> I2["**Alternative Approach:**<br>• Higher operational overhead managing multiple AWS services<br>• Dependency management between Snowflake and AWS Lambda"]
-    I1 --> I3["**Enhanced Glue Jobs:**<br>• Lower to moderate operational overhead with streamlined Glue jobs<br>• Automation reduces manual tasks through automated recovery and error handling"]
-
+    I1["Operations"] --> I2["Alternative Approach:<br/>• Multiple service management<br/>• Integration overhead<br/>• Complex dependencies"]
+    I1 --> I3["Enhanced Glue Jobs:<br/>• Streamlined operations<br/>• Automated processes<br/>• Reduced manual tasks"]
 ```
-## Diagram 10: Cost Implications
-``` mermaid
+
+## Cost Implications
+```mermaid
 flowchart TD
-    %% Cost Implications
-    J1["Cost Implications"]
-    J1 --> J2["**Alternative Approach:**<br>• Potentially higher costs due to usage of multiple AWS services (Snowpipe, Lambda, API Gateway)<br>• AWS Lambda costs scale with usage"]
-    J1 --> J3["**Enhanced Glue Jobs:**<br>• Potential cost savings by optimizing existing Glue infrastructure<br>• Initial development and maintenance costs for enhanced components may lead to long-term savings through efficiency"]
-
+    J1["Cost Analysis"] --> J2["Alternative Approach:<br/>• Service-based costs<br/>• Usage-based pricing<br/>• Multiple billing metrics"]
+    J1 --> J3["Enhanced Glue Jobs:<br/>• Optimized resources<br/>• Predictable costs<br/>• Development investment"]
 ```
-## Diagram 11: Data Integrity & Validation
-``` mermaid
+
+## Data Integrity & Validation
+```mermaid
 flowchart TD
-    %% Data Integrity & Validation
-    K1["Data Integrity & Validation"]
-    K1 --> K2["**Alternative Approach:**<br>• Basic validation via Lambda functions for data validation and transformation<br>• Potential for incomplete validation unless explicitly implemented"]
-    K1 --> K3["**Enhanced Glue Jobs:**<br>• Robust validation with SchemaValidator for thorough schema and nesting depth checks<br>• Enhanced data integrity ensuring only validated and correctly structured data is processed and loaded into Snowflake"]
-
+    K1["Data Integrity"] --> K2["Alternative Approach:<br/>• Lambda validation<br/>• Basic checks<br/>• Transform verification"]
+    K1 --> K3["Enhanced Glue Jobs:<br/>• Schema validation<br/>• Depth checking<br/>• Integrity assurance"]
 ```
-## Diagram 12: Flexibility & Extensibility
-``` mermaid
+
+## Flexibility & Extensibility
+```mermaid
 flowchart TD
-    %% Flexibility & Extensibility
-    L1["Flexibility & Extensibility"]
-    L1 --> L2["**Alternative Approach:**<br>• Highly flexible with easily updatable and scalable Lambda functions<br>• Extensible architecture allowing addition of new processing steps via additional Lambda functions"]
-    L1 --> L3["**Enhanced Glue Jobs:**<br>• Structured extensibility with modular classes like GlueJobProcessor<br>• Centralized logic promoting code reuse and maintainability, facilitating future extensions"]
-
+    L1["Flexibility"] --> L2["Alternative Approach:<br/>• Lambda modifications<br/>• Service additions<br/>• Integration options"]
+    L1 --> L3["Enhanced Glue Jobs:<br/>• Modular design<br/>• Code reusability<br/>• Easy extensions"]
 ```
-## Diagram 13: Monitoring & Metrics
-``` mermaid
+
+## Monitoring & Metrics
+```mermaid
 flowchart TD
-    %% Monitoring & Metrics
-    M1["Monitoring & Metrics"]
-    M1 --> M2["**Alternative Approach:**<br>• Separate monitoring for Snowflake and Lambda via their respective monitoring tools<br>• Requires managing multiple monitoring dashboards"]
-    M1 --> M3["**Enhanced Glue Jobs:**<br>• Integrated monitoring within AWS Glue with PerformanceMonitor publishing metrics to CloudWatch<br>• Comprehensive health checks via HealthCheckSystem providing detailed system and connection insights"]
-
+    M1["Monitoring"] --> M2["Alternative Approach:<br/>• Multiple dashboards<br/>• Service-specific metrics<br/>• Distributed logging"]
+    M1 --> M3["Enhanced Glue Jobs:<br/>• Unified monitoring<br/>• CloudWatch metrics<br/>• Health insights"]
 ```
-## Diagram 14: Deployment & Configuration
-``` mermaid
+
+## Deployment & Configuration
+```mermaid
 flowchart TD
-    %% Deployment & Configuration
-    N1["Deployment & Configuration"]
-    N1 --> N2["**Alternative Approach:**<br>• Multiple deployment pipelines for Snowpipe, Tasks, Lambda, API Gateway<br>• Complex configuration management ensuring synchronization across services"]
-    N1 --> N3["**Enhanced Glue Jobs:**<br>• Unified deployment within the Glue job, simplifying the deployment process<br>• Centralized configuration management with ConfigurationManager handling all settings, including environment-specific overrides and secrets"]
-
+    N1["Deployment"] --> N2["Alternative Approach:<br/>• Multiple pipelines<br/>• Service configs<br/>• Integration setup"]
+    N1 --> N3["Enhanced Glue Jobs:<br/>• Single deployment<br/>• Central configuration<br/>• Environment management"]
 ```
-## Diagram 15: Learning Curve
-``` mermaid
+
+## Learning Curve
+```mermaid
 flowchart TD
-    %% Learning Curve
-    O1["Learning Curve"]
-    O1 --> O2["**Alternative Approach:**<br>• Steeper learning curve requiring familiarity with Snowpipe and AWS Lambda<br>• Diverse skill set needed across multiple AWS services and Snowflake"]
-    O1 --> O3["**Enhanced Glue Jobs:**<br>• Manageable learning curve building upon existing Glue job knowledge<br>• Focused skill set emphasizing Python and Glue-specific enhancements, likely within the team's existing expertise"]
-
+    O1["Learning Curve"] --> O2["Alternative Approach:<br/>• Multiple technologies<br/>• Service expertise<br/>• Integration knowledge"]
+    O1 --> O3["Enhanced Glue Jobs:<br/>• Focused skill set<br/>• Python expertise<br/>• Glue framework"]
 ```
-
-
