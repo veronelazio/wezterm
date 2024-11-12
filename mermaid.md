@@ -53,7 +53,7 @@ flowchart TD
 ## Architecture Overview
 ```mermaid
 flowchart TD
-    A1["Architecture Overview"] --> A2["New Approach:<br/>• Snowpipe for real-time ingestion<br/>• Snowflake Tasks processing<br/>• Lambda for transformation"]
+    A1["Architecture Overview"] --> A2["New Approach:<br/>• Snowpipe real-time ingestion<br/>• Snowflake Tasks<br/>• Lambda transformation"]
     A1 --> A3["Enhanced Glue Jobs:<br/>• Modular classes<br/>• Validation and monitoring components<br/>• Automated error handling"]
 ```
 
